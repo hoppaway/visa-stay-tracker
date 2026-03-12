@@ -26,8 +26,8 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-NX9KFK6TT9');
+  gtag("js", new Date());
+  gtag("config", "G-NX9KFK6TT9");
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -305,7 +305,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="modal-handle"></div>
       <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:6px">Create your account</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:24px">Your trips will be saved and synced across all your devices.</div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your@email.com"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your&#64;email.com"></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="loginPassword" placeholder="At least 6 characters"></div>
       <button class="btn-primary" id="signupBtn">Continue to payment →</button>
       <div style="text-align:center;margin-top:16px">
@@ -319,7 +319,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="modal-handle"></div>
       <div class="account-user">
         <div class="account-avatar">👤</div>
-        <div><div class="account-name" id="accountEmailDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6d3d5c3d4e6c3cbc7cfca88c5c9cb">[email&#160;protected]</a></div><div class="account-pro">✓ Pro — active</div></div>
+        <div><div class="account-name" id="accountEmailDisplay">user&#64;email.com</div><div class="account-pro">✓ Pro — active</div></div>
       </div>
       <div class="account-section">
         <div class="account-section-title">Subscription</div>
@@ -633,7 +633,7 @@ window.onload = function() {
     }
     loginSuccess(email);
   };
-  document.getElementById('googleBtn').onclick = function() { loginSuccess('user@gmail.com'); };
+  document.getElementById('googleBtn').onclick = function() { loginSuccess('user&#64;gmail.com'); };
   document.getElementById('closeAccountBtn').onclick = function() { closeOverlay('accountModal'); };
   document.getElementById('logoutBtn').onclick = function() {
     isLoggedIn=false; MAX_FREE=3;
