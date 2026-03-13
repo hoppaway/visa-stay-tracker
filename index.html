@@ -17,6 +17,14 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="VisaStay Tracker — Schengen 90/180 Day Calculator">
 <meta name="twitter:description" content="Know exactly how many Schengen days you have left. Free calculator + email alerts before you overstay.">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NX9KFK6TT9"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-NX9KFK6TT9");
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -162,14 +170,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .explainer-example{background:var(--bg);border-radius:10px;padding:14px;font-size:13px;border-left:3px solid var(--blue)}
 @media(min-width:480px){.overlay.open{align-items:center}.modal{border-radius:20px}}
 </style>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NX9KFK6TT9"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag("js", new Date());
-gtag("config", "G-NX9KFK6TT9");
-</script>
 </head>
 <body>
 
@@ -315,7 +315,7 @@ gtag("config", "G-NX9KFK6TT9");
       <div class="modal-handle"></div>
       <div class="account-user">
         <div class="account-avatar">👤</div>
-        <div><div class="account-name" id="accountEmailDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bcc9cfd9cefcd9d1ddd5d092dfd3d1">[email&#160;protected]</a></div><div class="account-pro">✓ Pro — active</div></div>
+        <div><div class="account-name" id="accountEmailDisplay">user&#64;email.com</div><div class="account-pro">✓ Pro — active</div></div>
       </div>
       <div class="account-section">
         <div class="account-section-title">Subscription</div>
@@ -353,7 +353,7 @@ gtag("config", "G-NX9KFK6TT9");
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 var MAX_FREE = 3;
 var isLoggedIn = false;
 var trips = JSON.parse(localStorage.getItem('vst_trips') || '[]');
