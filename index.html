@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NX9KFK6TT9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-NX9KFK6TT9');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -622,13 +630,12 @@ window.onload = function() {
   };
 
   // banner
+  document.getElementById('learnMoreBtn') && (document.getElementById('learnMoreBtn').onclick = function(){
+    var b=document.getElementById('learnMoreBanner');
+    if(b) b.style.display=b.style.display==='none'?'block':'none';
+  });
 
-  document.getElementById('le
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NX9KFK6TT9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-NX9KFK6TT9');
+  render();
 </script>
+</body>
+</html>
