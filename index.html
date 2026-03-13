@@ -6,25 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#2563eb">
-<title>VisaStay Tracker — Schengen 90/180 Day Calculator</title>
-<meta name="description" content="Track your Schengen Area stay with the 90/180 day rule calculator. Know exactly how many days you have left, and get email alerts before you overstay.">
-<meta name="keywords" content="schengen calculator, 90 180 rule, schengen days tracker, visa stay tracker, schengen overstay, days remaining schengen">
-<link rel="canonical" href="https://www.visastaytracker.com/">
-<meta property="og:title" content="VisaStay Tracker — Schengen 90/180 Day Calculator">
-<meta property="og:description" content="Know exactly how many Schengen days you have left. Free calculator + email alerts before you overstay.">
-<meta property="og:url" content="https://www.visastaytracker.com/">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="VisaStay Tracker — Schengen 90/180 Day Calculator">
-<meta name="twitter:description" content="Know exactly how many Schengen days you have left. Free calculator + email alerts before you overstay.">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NX9KFK6TT9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag("js", new Date());
-  gtag("config", "G-NX9KFK6TT9");
-</script>
+<title>VisaStay Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -315,7 +297,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="modal-handle"></div>
       <div class="account-user">
         <div class="account-avatar">👤</div>
-        <div><div class="account-name" id="accountEmailDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bcc9cfd9cefcd9d1ddd5d092dfd3d1">[email&#160;protected]</a></div><div class="account-pro">✓ Pro — active</div></div>
+        <div><div class="account-name" id="accountEmailDisplay">user@email.com</div><div class="account-pro">✓ Pro — active</div></div>
       </div>
       <div class="account-section">
         <div class="account-section-title">Subscription</div>
@@ -353,7 +335,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 var MAX_FREE = 3;
 var isLoggedIn = false;
 var trips = JSON.parse(localStorage.getItem('vst_trips') || '[]');
@@ -641,4 +623,14 @@ window.onload = function() {
 
   // banner
 
-  document.getElementById('le
+  document.getElementById('learnMoreBtn').onclick = function() { openOverlay('explainerModal'); };
+
+
+  // explainer
+  document.getElementById('gotItBtn').onclick = function() { closeOverlay('explainerModal'); };
+
+  render();
+};
+</script>
+</body>
+</html>
