@@ -93,9 +93,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .nudge-sub{font-size:12px;opacity:.75}
 .nudge-btn{background:#f59e0b;color:#fff;border:none;padding:9px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .nudge-btn:hover{background:#d97706}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
-.overlay.open{display:flex}
-.overlay.open.center-overlay{align-items:center;justify-content:center;padding:20px}
 .modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}.modal.no-scroll{overflow-y:visible;max-height:none}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:100px;margin:0 auto 20px}
 .modal-pad{padding:24px 20px 40px}
@@ -156,7 +153,11 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .explainer-content{font-size:14px;color:var(--muted);line-height:1.7;display:flex;flex-direction:column;gap:14px}
 .explainer-content strong{color:var(--text)}
 .explainer-example{background:var(--bg);border-radius:10px;padding:14px;font-size:13px;border-left:3px solid var(--blue)}
-@media(min-width:480px){.overlay.open{align-items:center}.modal{border-radius:20px}}.center-overlay .modal{border-radius:20px;max-height:88vh;overflow-y:auto;width:100%;max-width:460px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none}
+.overlay.open{display:flex;align-items:flex-end;justify-content:center}
+.overlay.open.center-overlay{align-items:center;justify-content:center;padding:20px}
+.center-overlay .modal{border-radius:20px;max-height:calc(100vh - 80px);overflow-y:auto;width:100%;max-width:460px}
+@media(min-width:480px){.modal{border-radius:20px}}
 </style>
 </head>
 <body>
