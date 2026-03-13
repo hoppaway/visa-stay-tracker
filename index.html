@@ -10,14 +10,10 @@
 <meta name="description" content="Track your Schengen Area stay with the 90/180 day rule calculator. Know exactly how many days you have left, and get email alerts before you overstay.">
 <meta name="keywords" content="schengen calculator, 90 180 rule, schengen days tracker, visa stay tracker, schengen overstay, days remaining schengen">
 <link rel="canonical" href="https://www.visastaytracker.com/">
-
-<!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
 <meta property="og:title" content="VisaStay Tracker — Schengen 90/180 Day Calculator">
 <meta property="og:description" content="Know exactly how many Schengen days you have left. Free calculator + email alerts before you overstay.">
 <meta property="og:url" content="https://www.visastaytracker.com/">
 <meta property="og:type" content="website">
-
-<!-- Twitter/X -->
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="VisaStay Tracker — Schengen 90/180 Day Calculator">
 <meta name="twitter:description" content="Know exactly how many Schengen days you have left. Free calculator + email alerts before you overstay.">
@@ -305,7 +301,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="modal-handle"></div>
       <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:6px">Create your account</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:24px">Your trips will be saved and synced across all your devices.</div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your&#64;email.com"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your@email.com"></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="loginPassword" placeholder="At least 6 characters"></div>
       <button class="btn-primary" id="signupBtn">Continue to payment →</button>
       <div style="text-align:center;margin-top:16px">
@@ -319,7 +315,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="modal-handle"></div>
       <div class="account-user">
         <div class="account-avatar">👤</div>
-        <div><div class="account-name" id="accountEmailDisplay">user&#64;email.com</div><div class="account-pro">✓ Pro — active</div></div>
+        <div><div class="account-name" id="accountEmailDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bcc9cfd9cefcd9d1ddd5d092dfd3d1">[email&#160;protected]</a></div><div class="account-pro">✓ Pro — active</div></div>
       </div>
       <div class="account-section">
         <div class="account-section-title">Subscription</div>
@@ -516,7 +512,6 @@ function pickCountry(flag, name) {
 function showPaywall() {
   selectPlan('monthly');
   openOverlay('paywallModal');
-  if(typeof gtag!=='undefined') gtag('event','open_paywall',{event_category:'conversion'});
 }
 
 function selectPlan(plan) {
@@ -612,7 +607,6 @@ window.onload = function() {
     document.getElementById('loginView').style.display='block';
     document.getElementById('loggedInView').style.display='none';
     openOverlay('accountModal');
-    if(typeof gtag!=='undefined') gtag('event','start_trial',{event_category:'conversion'});
   };
 
   // account
@@ -633,7 +627,7 @@ window.onload = function() {
     }
     loginSuccess(email);
   };
-  document.getElementById('googleBtn').onclick = function() { loginSuccess('user&#64;gmail.com'); };
+  document.getElementById('googleBtn').onclick = function() { loginSuccess('user@gmail.com'); };
   document.getElementById('closeAccountBtn').onclick = function() { closeOverlay('accountModal'); };
   document.getElementById('logoutBtn').onclick = function() {
     isLoggedIn=false; MAX_FREE=3;
