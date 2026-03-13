@@ -178,7 +178,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="info-banner-text">Non-EU citizens can stay in the Schengen Area for max <strong>90 days in any 180-day period</strong>. Overstaying can mean fines, deportation, or an entry ban.</div>
       <span class="info-link" id="learnMoreBtn">Learn more →</span>
     </div>
-    <button class="info-dismiss" id="dismissBtn">×</button>
+    <button class="info-dismiss" id="dismissBtn">&#x2715;</button>
   </div>
 
   <div class="how-box">
@@ -206,7 +206,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
   </div>
 
   <div class="alert-box green" id="alertBox">
-    <div class="alert-icon">✅</div>
+    <div class="alert-icon" id="alertIcon">✅</div>
     <div id="alertText">Add your trips below to calculate your Schengen status.</div>
   </div>
 
@@ -412,11 +412,14 @@ function render() {
 
   var ab = document.getElementById('alertBox');
   var at = document.getElementById('alertText');
+  document.getElementById('alertIcon').style.display='';
   if (trips.length===0) {
     ab.className='alert-box green'; at.textContent='Add your trips below to calculate your Schengen status.';
   } else if (r.used>=90) {
-    var overMsg = r.over>0 ? ' You have exceeded the limit by <strong>'+r.over+' day'+(r.over>1?'s':'')+'</strong>.' : '';
-    ab.className='alert-box red'; at.innerHTML='⛔ <strong>90 days reached.</strong> Leave the Schengen area immediately.'+overMsg;
+    var overDays = r.over>0 ? r.over : 0;
+    ab.className='alert-box red';
+    document.getElementById('alertIcon').style.display='none';
+    at.innerHTML='<strong>⛔ You have exceeded the limit'+(overDays>0?' by '+overDays+' day'+(overDays>1?'s':''):'')+'. </strong>Leave the Schengen area immediately. Overstaying may result in fines or an entry ban.';
   } else if (r.used>=80) {
     ab.className='alert-box red'; at.innerHTML='<strong>Warning:</strong> '+r.used+' days used. Only '+r.remaining+' days left — plan your exit soon.';
   } else if (r.used>=60) {
@@ -434,7 +437,7 @@ function render() {
       var t=trips[i];
       var div=document.createElement('div');
       div.className='trip-item';
-      div.innerHTML='<div class="trip-flag">'+t.flag+'</div><div class="trip-info"><div class="trip-name">'+t.country+'</div><div class="trip-dates">'+fmtDate(t.entry)+' — '+fmtDate(t.exit)+'</div></div><div class="trip-right"><div class="trip-badge">'+tripDays(t.entry,t.exit)+'d</div><button class="trip-del" data-i="'+i+'">×</button></div>';
+      div.innerHTML='<div class="trip-flag">'+t.flag+'</div><div class="trip-info"><div class="trip-name">'+t.country+'</div><div class="trip-dates">'+fmtDate(t.entry)+' — '+fmtDate(t.exit)+'</div></div><div class="trip-right"><div class="trip-badge">'+tripDays(t.entry,t.exit)+'d</div><button class="trip-del" data-i="'+i+'">&#x2715;</button></div>';
       list.appendChild(div);
     }
     var dels = list.querySelectorAll('.trip-del');
