@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+"<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -10,10 +10,7 @@
   gtag('config', 'G-NX9KFK6TT9');
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#2563eb">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VisaStay Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -26,7 +23,7 @@
   --amber:#d97706;--amber-bg:#fffbeb;
   --red:#dc2626;--red-bg:#fef2f2;
 }
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:60px;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:60px}
 nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:8px}
 .logo-badge{background:var(--blue);color:#fff;font-size:12px;font-weight:700;width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -96,15 +93,15 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .nudge-sub{font-size:12px;opacity:.75}
 .nudge-btn{background:#f59e0b;color:#fff;border:none;padding:9px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .nudge-btn:hover{background:#d97706}
-.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;-webkit-overflow-scrolling:touch}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:var(--white);border-radius:20px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:100px;margin:0 auto 20px}
 .modal-pad{padding:24px 20px 40px}
 .modal-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:20px}
 .form-group{margin-bottom:16px}
 .form-label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:7px}
-.form-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);outline:none;-webkit-appearance:none;appearance:none}
+.form-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);outline:none;-webkit-appearance:none;appearance:none}
 .form-input:focus{border-color:var(--blue);background:#fff}
 .date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .date-sub{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600}
@@ -123,20 +120,20 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .btn-primary{width:100%;background:var(--blue);color:#fff;border:none;padding:15px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:20px}
 .btn-primary:hover{background:#1d4ed8}
 .btn-secondary{width:100%;background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;padding:12px;margin-top:6px}
-.paywall-header{background:var(--blue);padding:18px 24px 14px;color:#fff;text-align:center;border-radius:20px 20px 0 0;flex-shrink:0}
-.paywall-body{padding:14px 24px 20px}
-.feat-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.feat-list li{font-size:13px;display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+.paywall-header{background:var(--blue);padding:28px 24px 20px;color:#fff;text-align:center;border-radius:20px 20px 0 0}
+.paywall-body{padding:20px 24px 32px}
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.feat-list li{font-size:14px;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
 .check{color:var(--green);font-size:15px;flex-shrink:0;margin-top:1px}
-.plan-toggle{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:10px;gap:3px}
-.plan-btn{flex:1;padding:8px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.plan-toggle{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:16px;gap:4px}
+.plan-btn{flex:1;padding:10px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
 .plan-btn.active{background:var(--white);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .plan-btn.inactive{background:transparent;color:var(--muted)}
 .save-badge{background:var(--green);color:#fff;font-size:10px;padding:2px 6px;border-radius:100px;margin-left:4px}
-.price-box{background:var(--bg);border-radius:12px;padding:10px 16px;text-align:center;margin-bottom:12px}
-.price-big{font-family:'Fraunces',serif;font-size:36px;font-weight:700;line-height:1}
+.price-box{background:var(--bg);border-radius:12px;padding:16px;text-align:center;margin-bottom:20px}
+.price-big{font-family:'Fraunces',serif;font-size:42px;font-weight:700;line-height:1}
 .price-sub{font-size:13px;color:var(--muted);margin-top:4px}
-.btn-amber{width:100%;background:#f59e0b;color:#fff;border:none;padding:13px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:6px}
+.btn-amber{width:100%;background:#f59e0b;color:#fff;border:none;padding:15px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px}
 .btn-amber:hover{background:#d97706}
 .btn-skip{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;padding:8px;width:100%}
 .stripe-note{text-align:center;font-size:11px;color:var(--muted);padding-bottom:4px}
@@ -170,7 +167,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <span class="logo-visa">Visa</span><span class="logo-stay">Stay</span><span class="logo-tracker">Tracker</span>
     </div>
   </div>
-  <button class="nav-btn" id="navBtn">✦ Upgrade to Pro</button>
+  <button class="nav-btn" id="navBtn">\u2726 Upgrade to Pro</button>
 </nav>
 
 <div class="wrap">
@@ -178,16 +175,16 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
     <div class="info-banner-body">
       <div class="info-banner-title">What is the 90/180 rule?</div>
       <div class="info-banner-text">Non-EU citizens can stay in the Schengen Area for max <strong>90 days in any 180-day period</strong>. Overstaying can mean fines, deportation, or an entry ban.</div>
-      <span class="info-link" id="learnMoreBtn">Learn more →</span>
+      <span class="info-link" id="learnMoreBtn">Learn more \u2192</span>
     </div>
-
+    <button class="info-dismiss" id="dismissBtn">\u00d7</button>
   </div>
 
   <div class="how-box">
     <div class="how-title">How to use</div>
     <div class="how-steps">
-      <div class="how-step"><div class="step-num">1</div><div class="step-text"><strong>Add each trip</strong> to any Schengen country — entry date, exit date, country.</div></div>
-      <div class="how-step"><div class="step-num">2</div><div class="step-text"><strong>See your status</strong> instantly — days used, days remaining, safe-until date.</div></div>
+      <div class="how-step"><div class="step-num">1</div><div class="step-text"><strong>Add each trip</strong> to any Schengen country \u2014 entry date, exit date, country.</div></div>
+      <div class="how-step"><div class="step-num">2</div><div class="step-text"><strong>See your status</strong> instantly \u2014 days used, days remaining, safe-until date.</div></div>
       <div class="how-step"><div class="step-num">3</div><div class="step-text"><strong>Upgrade to Pro</strong> to get email alerts before you hit the 90-day limit.</div></div>
     </div>
   </div>
@@ -204,11 +201,11 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 
   <div class="stat-row">
     <div class="stat-box"><div class="stat-val green" id="statUsed">0</div><div class="stat-lbl">Days used</div></div>
-    <div class="stat-box"><div class="stat-val blue" id="statUntil">—</div><div class="stat-lbl">Safe until</div></div>
+    <div class="stat-box"><div class="stat-val blue" id="statUntil">\u2014</div><div class="stat-lbl">Safe until</div></div>
   </div>
 
   <div class="alert-box green" id="alertBox">
-    <div class="alert-icon">✅</div>
+    <div class="alert-icon">\u2705</div>
     <div id="alertText">Add your trips below to calculate your Schengen status.</div>
   </div>
 
@@ -223,7 +220,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="nudge-title">You've used all 3 free trips</div>
       <div class="nudge-sub">Upgrade to save unlimited trips &amp; get alerts</div>
     </div>
-    <button class="nudge-btn" id="nudgeBtn">✦ Go Pro — €2.99/mo</button>
+    <button class="nudge-btn" id="nudgeBtn">\u2726 Go Pro \u2014 \u20ac2.99/mo</button>
   </div>
 </div>
 
@@ -257,29 +254,29 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 <div class="overlay" id="paywallModal">
   <div class="modal" style="padding:0">
     <div class="paywall-header">
-      <div style="font-size:26px;margin-bottom:8px">🛡️</div>
-      <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:6px">Never overstay again.</div>
+      <div style="font-size:34px;margin-bottom:10px">\ud83d\udee1\ufe0f</div>
+      <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:8px">Never overstay again.</div>
       <div style="font-size:13px;opacity:.8;line-height:1.65">Get email alerts before you hit the limit.<br>Your trips saved securely, on every device.</div>
     </div>
     <div class="paywall-body">
       <ul class="feat-list">
-        <li><span class="check">✓</span><span><strong>Email alerts</strong> at 70, 80 &amp; 85 days — we warn you before you overstay</span></li>
-        <li><span class="check">✓</span><span><strong>Unlimited trips</strong> saved to your account</span></li>
-        <li><span class="check">✓</span><span><strong>Any device</strong> — always in sync</span></li>
-        <li><span class="check">✓</span><span><strong>Multi-passport</strong> — track two passports separately</span></li>
-        <li><span class="check">✓</span><span>Cancel anytime, no questions asked</span></li>
+        <li><span class="check">\u2713</span><span><strong>Email alerts</strong> at 70, 80 &amp; 85 days \u2014 we warn you before you overstay</span></li>
+        <li><span class="check">\u2713</span><span><strong>Unlimited trips</strong> saved to your account</span></li>
+        <li><span class="check">\u2713</span><span><strong>Any device</strong> \u2014 always in sync</span></li>
+        <li><span class="check">\u2713</span><span><strong>Multi-passport</strong> \u2014 track two passports separately</span></li>
+        <li><span class="check">\u2713</span><span>Cancel anytime, no questions asked</span></li>
       </ul>
       <div class="plan-toggle">
         <button class="plan-btn active" id="btnMonthly">Monthly</button>
         <button class="plan-btn inactive" id="btnYearly">Yearly <span class="save-badge">-33%</span></button>
       </div>
       <div class="price-box">
-        <div class="price-big" id="priceAmt">€2.99</div>
-        <div class="price-sub" id="priceSub">per month · billed monthly</div>
+        <div class="price-big" id="priceAmt">\u20ac2.99</div>
+        <div class="price-sub" id="priceSub">per month \u00b7 billed monthly</div>
       </div>
-      <button class="btn-amber" id="paywallCtaBtn">Start 7-day free trial →</button>
+      <button class="btn-amber" id="paywallCtaBtn">Start 7-day free trial \u2192</button>
       <button class="btn-skip" id="paywallSkipBtn">Maybe later</button>
-      <div class="stripe-note">🔒 Stripe · No charge during trial</div>
+      <div class="stripe-note">\ud83d\udd12 Secure payment via Stripe \u00b7 No charge during trial</div>
     </div>
   </div>
 </div>
@@ -293,19 +290,19 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div style="font-size:13px;color:var(--muted);margin-bottom:24px">Your trips will be saved and synced across all your devices.</div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your@email.com"></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="loginPassword" placeholder="At least 6 characters"></div>
-      <button class="btn-primary" id="signupBtn">Continue to payment →</button>
+      <button class="btn-primary" id="signupBtn">Continue to payment \u2192</button>
       <div style="text-align:center;margin-top:16px">
         <div style="font-size:12px;color:var(--muted);margin-bottom:10px">or</div>
         <button class="google-btn" id="googleBtn"><span style="font-size:18px;font-weight:700">G</span>&nbsp;Continue with Google</button>
       </div>
       <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">Already have an account? <span id="signinLink" style="color:var(--blue);cursor:pointer;font-weight:600">Sign in</span></div>
-      <button class="btn-secondary" id="backToPaywallBtn">← Back</button>
+      <button class="btn-secondary" id="backToPaywallBtn">\u2190 Back</button>
     </div>
     <div id="loggedInView" class="account-body" style="display:none">
       <div class="modal-handle"></div>
       <div class="account-user">
-        <div class="account-avatar">👤</div>
-        <div><div class="account-name" id="accountEmailDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbcec8dec9fbded6dad2d795d8d4d6">[email&#160;protected]</a></div><div class="account-pro">✓ Pro — active</div></div>
+        <div class="account-avatar">\ud83d\udc64</div>
+        <div><div class="account-name" id="accountEmailDisplay">user@email.com</div><div class="account-pro">\u2713 Pro \u2014 active</div></div>
       </div>
       <div class="account-section">
         <div class="account-section-title">Subscription</div>
@@ -313,9 +310,9 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       </div>
       <div class="account-section">
         <div class="account-section-title">Email alerts</div>
-        <div class="account-row"><span>Alert at 70 days used</span><span class="alert-on">✓ On</span></div>
-        <div class="account-row"><span>Alert at 80 days used</span><span class="alert-on">✓ On</span></div>
-        <div class="account-row"><span>Alert at 85 days used</span><span class="alert-on">✓ On</span></div>
+        <div class="account-row"><span>Alert at 70 days used</span><span class="alert-on">\u2713 On</span></div>
+        <div class="account-row"><span>Alert at 80 days used</span><span class="alert-on">\u2713 On</span></div>
+        <div class="account-row"><span>Alert at 85 days used</span><span class="alert-on">\u2713 On</span></div>
       </div>
       <button class="btn-close" id="closeAccountBtn">Close</button>
       <button class="btn-logout" id="logoutBtn">Sign out</button>
@@ -331,10 +328,10 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="explainer-title">The 90/180 Rule Explained</div>
       <div class="explainer-content">
         <p>If you're a <strong>non-EU citizen</strong> visiting the Schengen Area, you can stay for a maximum of <strong>90 days within any 180-day period</strong>.</p>
-        <p>The tricky part: the 180-day window is <strong>rolling</strong> — it moves forward every single day, not a fixed calendar period.</p>
+        <p>The tricky part: the 180-day window is <strong>rolling</strong> \u2014 it moves forward every single day, not a fixed calendar period.</p>
         <div class="explainer-example"><strong>Example:</strong> You enter France on Jan 1st and stay 30 days. On Feb 1st, the 180-day window runs from Aug 5th to Feb 1st. Only days within that window count toward your 90-day limit.</div>
         <p>As time passes, older trips "drop off" the window and free up your allowance again.</p>
-        <p><strong>Who does this apply to?</strong> Citizens of visa-free countries — USA, UK, Australia, Canada, Brazil, Japan, and many others.</p>
+        <p><strong>Who does this apply to?</strong> Citizens of visa-free countries \u2014 USA, UK, Australia, Canada, Brazil, Japan, and many others.</p>
         <p><strong>What happens if you overstay?</strong> Fines, denial of entry on future visits, or a temporary ban from the Schengen Area.</p>
         <div class="explainer-example"><strong>The 27 Schengen countries:</strong> Austria, Belgium, Croatia, Czech Republic, Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Iceland, Italy, Latvia, Liechtenstein, Lithuania, Luxembourg, Malta, Netherlands, Norway, Poland, Portugal, Slovakia, Slovenia, Spain, Sweden, Switzerland.</div>
       </div>
@@ -343,7 +340,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 var MAX_FREE = 3;
 var isLoggedIn = false;
 var trips = JSON.parse(localStorage.getItem('vst_trips') || '[]');
@@ -351,15 +348,15 @@ var selCountry = {flag:'', name:''};
 var currentPlan = 'monthly';
 
 var COUNTRIES = [
-  {flag:'🇦🇹',name:'Austria'},{flag:'🇧🇪',name:'Belgium'},{flag:'🇭🇷',name:'Croatia'},
-  {flag:'🇨🇿',name:'Czech Republic'},{flag:'🇩🇰',name:'Denmark'},{flag:'🇪🇪',name:'Estonia'},
-  {flag:'🇫🇮',name:'Finland'},{flag:'🇫🇷',name:'France'},{flag:'🇩🇪',name:'Germany'},
-  {flag:'🇬🇷',name:'Greece'},{flag:'🇭🇺',name:'Hungary'},{flag:'🇮🇸',name:'Iceland'},
-  {flag:'🇮🇹',name:'Italy'},{flag:'🇱🇻',name:'Latvia'},{flag:'🇱🇮',name:'Liechtenstein'},
-  {flag:'🇱🇹',name:'Lithuania'},{flag:'🇱🇺',name:'Luxembourg'},{flag:'🇲🇹',name:'Malta'},
-  {flag:'🇳🇱',name:'Netherlands'},{flag:'🇳🇴',name:'Norway'},{flag:'🇵🇱',name:'Poland'},
-  {flag:'🇵🇹',name:'Portugal'},{flag:'🇸🇰',name:'Slovakia'},{flag:'🇸🇮',name:'Slovenia'},
-  {flag:'🇪🇸',name:'Spain'},{flag:'🇸🇪',name:'Sweden'},{flag:'🇨🇭',name:'Switzerland'}
+  {flag:'\ud83c\udde6\ud83c\uddf9',name:'Austria'},{flag:'\ud83c\udde7\ud83c\uddea',name:'Belgium'},{flag:'\ud83c\udded\ud83c\uddf7',name:'Croatia'},
+  {flag:'\ud83c\udde8\ud83c\uddff',name:'Czech Republic'},{flag:'\ud83c\udde9\ud83c\uddf0',name:'Denmark'},{flag:'\ud83c\uddea\ud83c\uddea',name:'Estonia'},
+  {flag:'\ud83c\uddeb\ud83c\uddee',name:'Finland'},{flag:'\ud83c\uddeb\ud83c\uddf7',name:'France'},{flag:'\ud83c\udde9\ud83c\uddea',name:'Germany'},
+  {flag:'\ud83c\uddec\ud83c\uddf7',name:'Greece'},{flag:'\ud83c\udded\ud83c\uddfa',name:'Hungary'},{flag:'\ud83c\uddee\ud83c\uddf8',name:'Iceland'},
+  {flag:'\ud83c\uddee\ud83c\uddf9',name:'Italy'},{flag:'\ud83c\uddf1\ud83c\uddfb',name:'Latvia'},{flag:'\ud83c\uddf1\ud83c\uddee',name:'Liechtenstein'},
+  {flag:'\ud83c\uddf1\ud83c\uddf9',name:'Lithuania'},{flag:'\ud83c\uddf1\ud83c\uddfa',name:'Luxembourg'},{flag:'\ud83c\uddf2\ud83c\uddf9',name:'Malta'},
+  {flag:'\ud83c\uddf3\ud83c\uddf1',name:'Netherlands'},{flag:'\ud83c\uddf3\ud83c\uddf4',name:'Norway'},{flag:'\ud83c\uddf5\ud83c\uddf1',name:'Poland'},
+  {flag:'\ud83c\uddf5\ud83c\uddf9',name:'Portugal'},{flag:'\ud83c\uddf8\ud83c\uddf0',name:'Slovakia'},{flag:'\ud83c\uddf8\ud83c\uddee',name:'Slovenia'},
+  {flag:'\ud83c\uddea\ud83c\uddf8',name:'Spain'},{flag:'\ud83c\uddf8\ud83c\uddea',name:'Sweden'},{flag:'\ud83c\udde8\ud83c\udded',name:'Switzerland'}
 ];
 
 function openOverlay(id) { document.getElementById(id).style.display = 'flex'; }
@@ -376,16 +373,14 @@ function calcSchengen() {
     var e = exit; // count future planned days too
     if (s <= e) used += Math.floor((e-s)/86400000)+1;
   }
-  var rawUsed = used;
   used = Math.min(used, 90);
   var remaining = Math.max(0, 90-used);
-  var over = Math.max(0, rawUsed-90);
-  var safeUntil = '—';
+  var safeUntil = '\u2014';
   if (remaining > 0 && trips.length > 0) {
     var d = new Date(today); d.setDate(d.getDate()+remaining-1);
     safeUntil = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   }
-  return {used:used, remaining:remaining, safeUntil:safeUntil, over:over};
+  return {used:used, remaining:remaining, safeUntil:safeUntil};
 }
 
 function tripDays(entry, exit) {
@@ -417,9 +412,9 @@ function render() {
   if (trips.length===0) {
     ab.className='alert-box green'; at.textContent='Add your trips below to calculate your Schengen status.';
   } else if (r.used>=90) {
-    ab.className='alert-box red'; at.innerHTML='<strong>⛔ You have exceeded the limit by '+r.over+' day'+(r.over===1?'':'s')+'.</strong> Leave the Schengen area immediately. Overstaying may result in fines or an entry ban.';
+    ab.className='alert-box red'; at.innerHTML='<strong>You have reached 90 days.</strong> You must leave the Schengen area immediately.';
   } else if (r.used>=80) {
-    ab.className='alert-box red'; at.innerHTML='<strong>Warning:</strong> '+r.used+' days used. Only '+r.remaining+' days left — plan your exit soon.';
+    ab.className='alert-box red'; at.innerHTML='<strong>Warning:</strong> '+r.used+' days used. Only '+r.remaining+' days left \u2014 plan your exit soon.';
   } else if (r.used>=60) {
     ab.className='alert-box amber'; at.innerHTML='You\'ve used '+r.used+' of 90 days. Safe until <strong>'+r.safeUntil+'</strong>.';
   } else {
@@ -428,14 +423,14 @@ function render() {
 
   var list = document.getElementById('tripsList');
   if (trips.length===0) {
-    list.innerHTML='<div class="empty"><div class="empty-icon">✈️</div><div class="empty-title">No trips added yet</div><div class="empty-sub">Add your Schengen entries and exits to get started.</div></div>';
+    list.innerHTML='<div class="empty"><div class="empty-icon">\u2708\ufe0f</div><div class="empty-title">No trips added yet</div><div class="empty-sub">Add your Schengen entries and exits to get started.</div></div>';
   } else {
     list.innerHTML='';
     for (var i=trips.length-1; i>=0; i--) {
       var t=trips[i];
       var div=document.createElement('div');
       div.className='trip-item';
-      div.innerHTML='<div class="trip-flag">'+t.flag+'</div><div class="trip-info"><div class="trip-name">'+t.country+'</div><div class="trip-dates">'+fmtDate(t.entry)+' — '+fmtDate(t.exit)+'</div></div><div class="trip-right"><div class="trip-badge">'+tripDays(t.entry,t.exit)+'d</div><button class="trip-del" data-i="'+i+'">×</button></div>';
+      div.innerHTML='<div class="trip-flag">'+t.flag+'</div><div class="trip-info"><div class="trip-name">'+t.country+'</div><div class="trip-dates">'+fmtDate(t.entry)+' \u2014 '+fmtDate(t.exit)+'</div></div><div class="trip-right"><div class="trip-badge">'+tripDays(t.entry,t.exit)+'d</div><button class="trip-del" data-i="'+i+'">\u00d7</button></div>';
       list.appendChild(div);
     }
     var dels = list.querySelectorAll('.trip-del');
@@ -478,7 +473,7 @@ function buildGrid(filter) {
     dd.style.display='none'; grid.style.display='grid'; grid.innerHTML='';
     for (var j=0;j<COUNTRIES.length;j++) {
       var c=COUNTRIES[j];
-      var short=c.name.length>10?c.name.substring(0,9)+'…':c.name;
+      var short=c.name.length>10?c.name.substring(0,9)+'\u2026':c.name;
       var btn=document.createElement('button');
       btn.className='c-btn'+(selCountry.name===c.name?' sel':'');
       btn.innerHTML='<span class="c-flag">'+c.flag+'</span><span class="c-name">'+short+'</span>';
@@ -510,12 +505,12 @@ function selectPlan(plan) {
   var by=document.getElementById('btnYearly');
   if (plan==='monthly') {
     bm.className='plan-btn active'; by.className='plan-btn inactive';
-    document.getElementById('priceAmt').textContent='€2.99';
-    document.getElementById('priceSub').textContent='per month · billed monthly';
+    document.getElementById('priceAmt').textContent='\u20ac2.99';
+    document.getElementById('priceSub').textContent='per month \u00b7 billed monthly';
   } else {
     by.className='plan-btn active'; bm.className='plan-btn inactive';
-    document.getElementById('priceAmt').textContent='€23.99';
-    document.getElementById('priceSub').innerHTML='per year · <strong style="color:#16a34a">save €11.89</strong> vs monthly';
+    document.getElementById('priceAmt').textContent='\u20ac23.99';
+    document.getElementById('priceSub').innerHTML='per year \u00b7 <strong style="color:#16a34a">save \u20ac11.89</strong> vs monthly';
   }
 }
 
@@ -525,7 +520,7 @@ function loginSuccess(email) {
   document.getElementById('loginView').style.display='none';
   document.getElementById('loggedInView').style.display='block';
   var nb=document.getElementById('navBtn');
-  nb.textContent='👤 Account';
+  nb.textContent='\ud83d\udc64 Account';
   nb.style.background='#2563eb';
   nb.onclick=function(){
     document.getElementById('loggedInView').style.display='block';
@@ -623,19 +618,25 @@ window.onload = function() {
     isLoggedIn=false; MAX_FREE=3;
     closeOverlay('accountModal');
     var nb=document.getElementById('navBtn');
-    nb.textContent='✦ Upgrade to Pro';
+    nb.textContent='\u2726 Upgrade to Pro';
     nb.style.background='#f59e0b';
     nb.onclick=showPaywall;
     render();
   };
 
   // banner
-  document.getElementById('learnMoreBtn') && (document.getElementById('learnMoreBtn').onclick = function(){
-    var b=document.getElementById('learnMoreBanner');
-    if(b) b.style.display=b.style.display==='none'?'block':'none';
-  });
+  document.getElementById('dismissBtn').onclick = function() {
+    document.getElementById('infoBanner').style.display='none';
+    localStorage.setItem('vst_dismissed','1');
+  };
+  document.getElementById('learnMoreBtn').onclick = function() { openOverlay('explainerModal'); };
+  if (localStorage.getItem('vst_dismissed')) document.getElementById('infoBanner').style.display='none';
+
+  // explainer
+  document.getElementById('gotItBtn').onclick = function() { closeOverlay('explainerModal'); };
 
   render();
+};
 </script>
 </body>
 </html>
