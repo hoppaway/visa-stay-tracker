@@ -95,7 +95,8 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .nudge-btn:hover{background:#d97706}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}
+.overlay.open.center-overlay{align-items:center}
+.modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}.modal.no-scroll{overflow-y:visible;max-height:none}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:100px;margin:0 auto 20px}
 .modal-pad{padding:24px 20px 40px}
 .modal-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:20px}
@@ -155,7 +156,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .explainer-content{font-size:14px;color:var(--muted);line-height:1.7;display:flex;flex-direction:column;gap:14px}
 .explainer-content strong{color:var(--text)}
 .explainer-example{background:var(--bg);border-radius:10px;padding:14px;font-size:13px;border-left:3px solid var(--blue)}
-@media(min-width:480px){.overlay.open{align-items:center}.modal{border-radius:20px}}
+@media(min-width:480px){.overlay.open{align-items:center}.modal{border-radius:20px}}.center-overlay .modal{border-radius:20px}
 </style>
 </head>
 <body>
@@ -251,8 +252,8 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 </div>
 
 <!-- PAYWALL -->
-<div class="overlay" id="paywallModal">
-  <div class="modal" style="padding:0">
+<div class="overlay center-overlay" id="paywallModal">
+  <div class="modal no-scroll" style="padding:0">
     <div class="paywall-header">
       <div style="font-size:34px;margin-bottom:10px">🛡️</div>
       <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:8px">Never overstay again.</div>
@@ -282,7 +283,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 </div>
 
 <!-- ACCOUNT -->
-<div class="overlay" id="accountModal">
+<div class="overlay center-overlay" id="accountModal">
   <div class="modal">
     <div id="loginView" class="account-body">
       <div class="modal-handle"></div>
@@ -373,14 +374,16 @@ function calcSchengen() {
     var e = exit; // count future planned days too
     if (s <= e) used += Math.floor((e-s)/86400000)+1;
   }
+  var rawUsed = used;
   used = Math.min(used, 90);
+  var over = Math.max(0, rawUsed - 90);
   var remaining = Math.max(0, 90-used);
   var safeUntil = '—';
   if (remaining > 0 && trips.length > 0) {
     var d = new Date(today); d.setDate(d.getDate()+remaining-1);
     safeUntil = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   }
-  return {used:used, remaining:remaining, safeUntil:safeUntil};
+  return {used:used, over:over, remaining:remaining, safeUntil:safeUntil};
 }
 
 function tripDays(entry, exit) {
@@ -412,7 +415,8 @@ function render() {
   if (trips.length===0) {
     ab.className='alert-box green'; at.textContent='Add your trips below to calculate your Schengen status.';
   } else if (r.used>=90) {
-    ab.className='alert-box red'; at.innerHTML='<strong>You have reached 90 days.</strong> You must leave the Schengen area immediately.';
+    var overMsg = r.over>0 ? ' You have exceeded the limit by <strong>'+r.over+' day'+(r.over>1?'s':'')+'</strong>.' : '';
+    ab.className='alert-box red'; at.innerHTML='⛔ <strong>90 days reached.</strong> Leave the Schengen area immediately.'+overMsg;
   } else if (r.used>=80) {
     ab.className='alert-box red'; at.innerHTML='<strong>Warning:</strong> '+r.used+' days used. Only '+r.remaining+' days left — plan your exit soon.';
   } else if (r.used>=60) {
