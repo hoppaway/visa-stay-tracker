@@ -392,24 +392,24 @@ function calcSchengen() {
   var over = Math.max(0, rawUsed - 90);
   var remaining = Math.max(0, 90 - used);
 
-  // Safe until: find the last day where cumulative days in window = 90
-  // Walk forward day by day from today until we hit 90 days used
+  // Safe until: walk forward day by day until we hit 90 days used
   var safeUntil = '—';
   if (trips.length > 0 && used < 90) {
-    // Binary search or simple walk: find last day where daysUsedAsOf <= 90
     var checkDate = new Date(today);
-    // Max meaningful window is 180 days ahead
-    for (var d = 0; d < 180; d++) {
+    var hitLimit = false;
+    for (var d = 0; d < 365; d++) {
       var du = daysUsedAsOf(checkDate);
       if (du >= 90) {
-        // Step back one day
+        // Safe until is the day before
         checkDate.setDate(checkDate.getDate()-1);
+        safeUntil = checkDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+        hitLimit = true;
         break;
       }
-      // If we've passed all trips, we're safe for remaining days
       checkDate.setDate(checkDate.getDate()+1);
     }
-    safeUntil = checkDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    // If we never hit 90 days in the next 365 days, show no limit
+    if (!hitLimit) safeUntil = '—';
   }
 
   return {used:used, over:over, remaining:remaining, safeUntil:safeUntil};
