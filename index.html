@@ -363,14 +363,13 @@ function closeOverlay(id) { document.getElementById(id).style.display = 'none'; 
 function calcSchengen() {
   var today = new Date(); today.setHours(0,0,0,0);
 
-  // Calculate days used in the rolling 180-day window from a given reference date
+  // Days used in 180-day window as of a given date (only counts days up to that date)
   function daysUsedAsOf(refDate) {
     var winStart = new Date(refDate); winStart.setDate(winStart.getDate()-179);
     var used = 0;
     for (var i=0; i<trips.length; i++) {
       var entry = new Date(trips[i].entry); entry.setHours(0,0,0,0);
       var exit  = new Date(trips[i].exit);  exit.setHours(0,0,0,0);
-      // Only count days up to refDate (not future days beyond refDate)
       var e = exit < refDate ? exit : refDate;
       var s = entry > winStart ? entry : winStart;
       if (s <= e) used += Math.floor((e-s)/86400000)+1;
@@ -378,37 +377,28 @@ function calcSchengen() {
     return used;
   }
 
-  // Current usage (including all future planned trips)
-  var winStart = new Date(today); winStart.setDate(winStart.getDate()-179);
-  var rawUsed = 0;
-  for (var i=0; i<trips.length; i++) {
-    var entry = new Date(trips[i].entry); entry.setHours(0,0,0,0);
-    var exit  = new Date(trips[i].exit);  exit.setHours(0,0,0,0);
-    var s = entry > winStart ? entry : winStart;
-    var e = exit;
-    if (s <= e) rawUsed += Math.floor((e-s)/86400000)+1;
-  }
+  // TODAY: count only days up to today (past + ongoing trips)
+  var rawUsed = daysUsedAsOf(today);
   var used = Math.min(rawUsed, 90);
   var over = Math.max(0, rawUsed - 90);
   var remaining = Math.max(0, 90 - used);
 
-  // Safe until: walk forward day by day until we hit 90 days used
+  // Safe until: walk forward to find when the 90-day limit is hit
+  // This naturally accounts for future planned trips
   var safeUntil = '—';
   if (trips.length > 0 && used < 90) {
     var checkDate = new Date(today);
     var hitLimit = false;
     for (var d = 0; d < 365; d++) {
+      checkDate.setDate(checkDate.getDate()+1);
       var du = daysUsedAsOf(checkDate);
       if (du >= 90) {
-        // Safe until is the day before
         checkDate.setDate(checkDate.getDate()-1);
         safeUntil = checkDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
         hitLimit = true;
         break;
       }
-      checkDate.setDate(checkDate.getDate()+1);
     }
-    // If we never hit 90 days in the next 365 days, show no limit
     if (!hitLimit) safeUntil = '—';
   }
 
