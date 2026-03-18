@@ -180,6 +180,16 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .waitlist-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px}
 .waitlist-form{display:flex;flex-direction:column;gap:10px}
 .waitlist-success{display:none;background:var(--green-bg);border:1px solid #bbf7d0;border-radius:10px;padding:14px;font-size:14px;color:#14532d;margin-top:10px}
+/* Footer */
+.footer{text-align:center;padding:20px 16px 40px;font-size:12px;color:var(--muted)}
+.footer a{color:var(--muted);text-decoration:underline}
+.footer a:hover{color:var(--text)}
+/* Cookie banner */
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--text);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;z-index:999;font-size:13px;line-height:1.5}
+.cookie-banner a{color:#93c5fd;text-decoration:underline}
+.cookie-btns{display:flex;gap:8px;flex-shrink:0}
+.cookie-accept{background:var(--blue);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.cookie-decline{background:transparent;color:#9ca3af;border:1px solid #4b5563;padding:8px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -944,7 +954,37 @@ window.onload = function() {
   };
 
   render();
+
+  // Cookie banner
+  var cookieChoice = localStorage.getItem('vst_cookies');
+  if (!cookieChoice) {
+    document.getElementById('cookieBanner').style.display = 'flex';
+  }
+  document.getElementById('cookieAccept').onclick = function() {
+    localStorage.setItem('vst_cookies', 'accepted');
+    document.getElementById('cookieBanner').style.display = 'none';
+    gtag('consent', 'update', {analytics_storage: 'granted'});
+  };
+  document.getElementById('cookieDecline').onclick = function() {
+    localStorage.setItem('vst_cookies', 'declined');
+    document.getElementById('cookieBanner').style.display = 'none';
+    gtag('consent', 'update', {analytics_storage: 'denied'});
+  };
 };
 </script>
+<!-- FOOTER -->
+<div class="footer">
+  <a href="/privacy.html">Privacy Policy</a> · © 2026 VisaStay Tracker · <a href="mailto:info@visastaytracker.com">info@visastaytracker.com</a>
+</div>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner" style="display:none">
+  <div>🍪 We use cookies to analyze traffic and improve the app. <a href="/privacy.html">Learn more</a></div>
+  <div class="cookie-btns">
+    <button class="cookie-decline" id="cookieDecline">Decline</button>
+    <button class="cookie-accept" id="cookieAccept">Accept</button>
+  </div>
+</div>
+
 </body>
 </html>
