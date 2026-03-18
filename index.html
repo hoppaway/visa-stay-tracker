@@ -155,6 +155,9 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;-webkit-overflow-scrolling:touch}
 .overlay.open{display:flex}
 .modal{background:var(--white);border-radius:20px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* Overstay warning inside modal */
+.overstay-warning{background:var(--red-bg);border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-top:16px;font-size:13px;color:#7f1d1d;line-height:1.5;display:none}
+.overstay-warning strong{display:block;margin-bottom:3px;font-size:14px}
 </style>
 </head>
 <body>
@@ -199,7 +202,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 
   <div class="stat-row">
     <div class="stat-box"><div class="stat-val green" id="statUsed">0</div><div class="stat-lbl">Days used</div></div>
-    <div class="stat-box"><div class="stat-val blue" id="statUntil">—</div><div class="stat-lbl">Safe until</div></div>
+    <div class="stat-box"><div class="stat-val blue" id="statUntil">—</div><div class="stat-lbl" id="statUntilLbl">Safe until</div></div>
   </div>
 
   <div class="alert-box green" id="alertBox">
@@ -242,6 +245,11 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
         <div><div class="date-sub">Entry date</div><input class="form-input" type="date" id="entryDate"></div>
         <div><div class="date-sub">Exit date</div><input class="form-input" type="date" id="exitDate"></div>
       </div>
+    </div>
+    <!-- Overstay warning shown inline before saving -->
+    <div class="overstay-warning" id="overstayWarning">
+      <strong>⚠️ Overstay detected</strong>
+      <span id="overstayWarningText"></span>
     </div>
     <button class="btn-primary" id="saveTripBtn">Save trip</button>
     <button class="btn-secondary" id="cancelTripBtn">Cancel</button>
@@ -300,7 +308,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <div class="modal-handle"></div>
       <div class="account-user">
         <div class="account-avatar">👤</div>
-        <div><div class="account-name" id="accountEmailDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e5b5d4b5c6e4b434f4742004d4143">[email&#160;protected]</a></div><div class="account-pro">✓ Pro — active</div></div>
+        <div><div class="account-name" id="accountEmailDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e491978196a4819c8589948881ca878b89">[email&#160;protected]</a></div><div class="account-pro">✓ Pro — active</div></div>
       </div>
       <div class="account-section">
         <div class="account-section-title">Subscription</div>
@@ -383,27 +391,128 @@ function calcSchengen() {
   var over = Math.max(0, rawUsed - 90);
   var remaining = Math.max(0, 90 - used);
 
-  // Safe until: walk forward to find when the 90-day limit is hit
-  // This naturally accounts for future planned trips
-  var safeUntil = '—';
-  if (trips.length > 0 && used < 90) {
-    var checkDate = new Date(today);
-    var hitLimit = false;
-    for (var d = 0; d < 365; d++) {
-      checkDate.setDate(checkDate.getDate()+1);
-      var du = daysUsedAsOf(checkDate);
-      if (du >= 90) {
-        checkDate.setDate(checkDate.getDate()-1);
-        safeUntil = checkDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-        hitLimit = true;
-        break;
-      }
+  // Detect future trips (exit date after today)
+  var hasFutureTrip = false;
+  var latestFutureExit = null;
+  for (var fi = 0; fi < trips.length; fi++) {
+    var fExit = new Date(trips[fi].exit); fExit.setHours(0,0,0,0);
+    if (fExit > today) {
+      hasFutureTrip = true;
+      if (!latestFutureExit || fExit > latestFutureExit) latestFutureExit = fExit;
     }
-    if (!hitLimit) safeUntil = '—';
   }
 
-  return {used:used, over:over, remaining:remaining, safeUntil:safeUntil};
+  // Full count including future trips for a given reference date
+  function daysUsedFull(refDate) {
+    var winStart = new Date(refDate); winStart.setDate(winStart.getDate()-179);
+    var total = 0;
+    for (var i = 0; i < trips.length; i++) {
+      var te = new Date(trips[i].entry); te.setHours(0,0,0,0);
+      var tx = new Date(trips[i].exit);  tx.setHours(0,0,0,0);
+      var s = te > winStart ? te : winStart;
+      var e = tx < refDate  ? tx : refDate;
+      if (s <= e) total += Math.floor((e-s)/86400000)+1;
+    }
+    return total;
+  }
+
+  var safeUntil = null;
+  var overstayOn = null;
+  var overstayTotal = 0;
+
+  if (trips.length > 0) {
+    // Scan range: if future trips exist, go 180 days past the last exit; else 365 days
+    var scanEnd = new Date(today);
+    if (latestFutureExit) {
+      scanEnd = new Date(latestFutureExit);
+      scanEnd.setDate(scanEnd.getDate() + 180);
+    } else {
+      scanEnd.setDate(scanEnd.getDate() + 365);
+    }
+
+    var cursor = new Date(today);
+    cursor.setDate(cursor.getDate() + 1);
+    var foundOverstay = false;
+
+    while (cursor <= scanEnd) {
+      var du = daysUsedFull(cursor);
+      if (du > 90) {
+        overstayOn = cursor.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+        overstayTotal = du;
+        foundOverstay = true;
+        break;
+      }
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    if (!foundOverstay) {
+      if (!hasFutureTrip) {
+        // No future trips — find when limit would hit if staying continuously
+        var sc2 = new Date(today);
+        var hitLimit2 = false;
+        for (var d2 = 0; d2 < 365; d2++) {
+          sc2.setDate(sc2.getDate() + 1);
+          var du2 = daysUsedFull(sc2);
+          if (du2 > 90) {
+            sc2.setDate(sc2.getDate() - 1);
+            safeUntil = sc2.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+            hitLimit2 = true;
+            break;
+          }
+        }
+        if (!hitLimit2) safeUntil = '—';
+      } else {
+        // Future trips exist but no overstay — trips are within limit
+        safeUntil = latestFutureExit.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+      }
+    }
+  }
+
+  return {used:used, over:over, remaining:remaining, safeUntil:safeUntil, overstayOn:overstayOn, overstayTotal:overstayTotal};
 }
+
+// ─── NEW: check if a candidate trip causes an overstay in any 180-day window ───
+// Returns null if OK, or an object {date, total} describing the first violation.
+function checkTripOverstay(entry, exit) {
+  // Temporarily add the trip to the list
+  var candidate = {country: selCountry.name, flag: selCountry.flag, entry: entry, exit: exit};
+  trips.push(candidate);
+
+  var entryDate = new Date(entry); entryDate.setHours(0,0,0,0);
+  var exitDate  = new Date(exit);  exitDate.setHours(0,0,0,0);
+
+  // We need to check every day from entryDate to exitDate (the new trip's range)
+  // plus up to 180 days after exit, since the rolling window keeps moving.
+  var checkEnd = new Date(exitDate);
+  checkEnd.setDate(checkEnd.getDate() + 180);
+
+  var violation = null;
+  var cursor = new Date(entryDate);
+  while (cursor <= checkEnd) {
+    var winStart = new Date(cursor); winStart.setDate(winStart.getDate() - 179);
+    var total = 0;
+    for (var i = 0; i < trips.length; i++) {
+      var te = new Date(trips[i].entry); te.setHours(0,0,0,0);
+      var tx = new Date(trips[i].exit);  tx.setHours(0,0,0,0);
+      var s = te > winStart ? te : winStart;
+      var e = tx < cursor  ? tx : cursor;
+      if (s <= e) total += Math.floor((e - s) / 86400000) + 1;
+    }
+    if (total > 90) {
+      violation = {
+        date: cursor.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}),
+        total: total
+      };
+      break;
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  // Remove the candidate trip we temporarily added
+  trips.pop();
+  return violation;
+}
+// ────────────────────────────────────────────────────────────────────────────────
 
 function tripDays(entry, exit) {
   return Math.floor((new Date(exit)-new Date(entry))/86400000)+1;
@@ -427,7 +536,19 @@ function render() {
   var usedEl = document.getElementById('statUsed');
   usedEl.textContent = r.used;
   usedEl.className = 'stat-val '+(r.used>=80?'red':r.used>=60?'amber':'green');
-  document.getElementById('statUntil').textContent = r.safeUntil;
+
+  // Stat box: show "Overstay on" in red if future overstay detected, else "Safe until" in blue
+  var untilEl  = document.getElementById('statUntil');
+  var untilLbl = document.getElementById('statUntilLbl');
+  if (r.overstayOn) {
+    untilEl.textContent = r.overstayOn.replace(/\s\d{4}$/, '');
+    untilEl.className = 'stat-val red';
+    if (untilLbl) untilLbl.textContent = 'Overstay on';
+  } else {
+    untilEl.textContent = r.safeUntil || '—';
+    untilEl.className = 'stat-val blue';
+    if (untilLbl) untilLbl.textContent = 'Safe until';
+  }
 
   var ab = document.getElementById('alertBox');
   var at = document.getElementById('alertText');
@@ -439,10 +560,14 @@ function render() {
     ab.className='alert-box red';
     document.getElementById('alertIcon').style.display='none';
     at.innerHTML='<strong>⛔ You have exceeded the limit'+(overDays>0?' by '+overDays+' day'+(overDays>1?'s':''):'')+'. </strong>Leave the Schengen area immediately. Overstaying may result in fines or an entry ban.';
+  } else if (r.overstayOn) {
+    ab.className='alert-box red';
+    document.getElementById('alertIcon').style.display='none';
+    at.innerHTML='<strong>⚠️ Overstay detected on '+r.overstayOn+'.</strong> Your planned trips will exceed 90 days in a 180-day window. Adjust your travel dates to avoid fines or an entry ban.';
   } else if (r.used>=80) {
     ab.className='alert-box red'; at.innerHTML='<strong>Warning:</strong> '+r.used+' days used. Only '+r.remaining+' days left — plan your exit soon.';
   } else if (r.used>=60) {
-    ab.className='alert-box amber'; at.innerHTML='You\'ve used '+r.used+' of 90 days. Safe until <strong>'+r.safeUntil+'</strong>.';
+    ab.className='alert-box amber'; at.innerHTML='You\'ve used '+r.used+' of 90 days. Safe until <strong>'+(r.safeUntil||'—')+'</strong>.';
   } else {
     ab.className='alert-box green'; at.innerHTML='You\'re within the limit. <strong>'+r.remaining+' days remaining</strong> in the current 180-day window.';
   }
@@ -584,6 +709,7 @@ window.onload = function() {
     document.getElementById('countryDropdown').style.display='none';
     document.getElementById('entryDate').value='';
     document.getElementById('exitDate').value='';
+    document.getElementById('overstayWarning').style.display='none';
     openOverlay('addModal');
     buildGrid('');
   };
@@ -595,6 +721,33 @@ window.onload = function() {
     buildGrid(this.value);
   };
 
+  // ─── Live overstay check: runs whenever entry or exit date changes ───
+  function liveOverstayCheck() {
+    var entry = document.getElementById('entryDate').value;
+    var exit  = document.getElementById('exitDate').value;
+    var warn  = document.getElementById('overstayWarning');
+    var warnText = document.getElementById('overstayWarningText');
+    if (!entry || !exit || new Date(exit) < new Date(entry)) {
+      warn.style.display = 'none';
+      return;
+    }
+    if (!selCountry.name) {
+      warn.style.display = 'none';
+      return;
+    }
+    var violation = checkTripOverstay(entry, exit);
+    if (violation) {
+      warnText.textContent = 'This trip would cause an overstay on ' + violation.date + ' (' + violation.total + ' days in a 180-day window). You may face fines or an entry ban.';
+      warn.style.display = 'block';
+    } else {
+      warn.style.display = 'none';
+    }
+  }
+
+  document.getElementById('entryDate').onchange = liveOverstayCheck;
+  document.getElementById('exitDate').onchange   = liveOverstayCheck;
+  // ────────────────────────────────────────────────────────────────────
+
   document.getElementById('saveTripBtn').onclick = function() {
     var entry=document.getElementById('entryDate').value;
     var exit=document.getElementById('exitDate').value;
@@ -604,6 +757,18 @@ window.onload = function() {
     }
     if (!entry||!exit) {alert('Please enter both dates.');return;}
     if (new Date(exit)<new Date(entry)) {alert('Exit date must be after entry date.');return;}
+
+    // ─── Overstay check on save ───
+    var violation = checkTripOverstay(entry, exit);
+    if (violation) {
+      // Save anyway but show the warning box (already visible) — trip is saved so user is informed
+      trips.push({country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit});
+      closeOverlay('addModal');
+      render();
+      return;
+    }
+    // ─────────────────────────────
+
     trips.push({country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit});
     closeOverlay('addModal');
     render();
