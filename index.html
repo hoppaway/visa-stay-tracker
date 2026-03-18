@@ -714,6 +714,7 @@ function pickCountry(flag, name) {
 function showPaywall() {
   selectPlan('monthly');
   openOverlay('paywallModal');
+  gtag('event', 'paywall_view');
 }
 
 function selectPlan(plan) {
@@ -762,10 +763,16 @@ window.onload = function() {
   }
 
   // nav button
-  document.getElementById('navBtn').onclick = showPaywall;
+  document.getElementById('navBtn').onclick = function() {
+    gtag('event', 'upgrade_click', {location: 'navbar'});
+    showPaywall();
+  };
 
   // nudge button
-  document.getElementById('nudgeBtn').onclick = showPaywall;
+  document.getElementById('nudgeBtn').onclick = function() {
+    gtag('event', 'upgrade_click', {location: 'trip_limit_nudge'});
+    showPaywall();
+  };
 
   // add trip
   document.getElementById('addBtn').onclick = function() {
@@ -851,6 +858,8 @@ window.onload = function() {
     if (!stillHere && new Date(exit)<new Date(entry)) {alert('Exit date must be after entry date.');return;}
 
     trips.push({country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit,open:stillHere});
+    if (trips.length === 1) gtag('event', 'first_trip_added');
+    gtag('event', 'trip_added', {total_trips: trips.length});
     closeOverlay('addModal');
     render();
   };
@@ -860,6 +869,7 @@ window.onload = function() {
   document.getElementById('btnYearly').onclick  = function() { selectPlan('yearly'); };
   document.getElementById('paywallSkipBtn').onclick = function() { closeOverlay('paywallModal'); };
   document.getElementById('paywallCtaBtn').onclick = function() {
+    gtag('event', 'trial_click', {plan: currentPlan});
     closeOverlay('paywallModal');
     document.getElementById('loginView').style.display='block';
     document.getElementById('loggedInView').style.display='none';
@@ -903,8 +913,14 @@ window.onload = function() {
   document.getElementById('gotItBtn').onclick = function() { closeOverlay('explainerModal'); };
 
   // app store buttons
-  document.getElementById('appStoreBtn').onclick  = function() { openOverlay('waitlistModal'); };
-  document.getElementById('playStoreBtn').onclick = function() { openOverlay('waitlistModal'); };
+  document.getElementById('appStoreBtn').onclick  = function() {
+    gtag('event', 'appstore_click', {store: 'ios'});
+    openOverlay('waitlistModal');
+  };
+  document.getElementById('playStoreBtn').onclick = function() {
+    gtag('event', 'appstore_click', {store: 'android'});
+    openOverlay('waitlistModal');
+  };
 
   // waitlist modal
   var overlaysAll = ['addModal','paywallModal','accountModal','explainerModal','waitlistModal'];
@@ -918,6 +934,7 @@ window.onload = function() {
       var el = document.getElementById('waitlistEmail');
       el.style.borderColor='#dc2626'; setTimeout(function(){el.style.borderColor='';},1500); return;
     }
+    gtag('event', 'waitlist_signup');
     // In future: POST email to Supabase/Mailchimp. For now just show success.
     document.getElementById('waitlistEmail').style.display='none';
     document.getElementById('waitlistSubmitBtn').style.display='none';
