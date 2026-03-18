@@ -12,6 +12,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VisaStay Tracker</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='900' font-size='16' fill='white'>90</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -158,6 +159,27 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 /* Overstay warning inside modal */
 .overstay-warning{background:var(--red-bg);border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;margin-top:16px;font-size:13px;color:#7f1d1d;line-height:1.5;display:none}
 .overstay-warning strong{display:block;margin-bottom:3px;font-size:14px}
+/* Still here toggle */
+.still-here-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:10px;padding:11px 14px;margin-top:10px;margin-bottom:4px}
+.still-here-label{font-size:13px;color:var(--text);font-weight:500}
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:100px;cursor:pointer;transition:background .2s}
+.toggle input:checked+.toggle-track{background:var(--blue)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none}
+.toggle input:checked~.toggle-thumb{transform:translateX(18px)}
+/* App store bar */
+.app-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 16px;margin-top:8px}
+.app-store-btn{display:flex;align-items:center;gap:7px;background:var(--text);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.app-store-btn:hover{opacity:.8}
+.app-store-btn svg{flex-shrink:0}
+/* Waitlist modal */
+.waitlist-body{padding:28px 24px 32px;text-align:center}
+.waitlist-icon{font-size:40px;margin-bottom:14px}
+.waitlist-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:8px}
+.waitlist-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.waitlist-form{display:flex;flex-direction:column;gap:10px}
+.waitlist-success{display:none;background:var(--green-bg);border:1px solid #bbf7d0;border-radius:10px;padding:14px;font-size:14px;color:#14532d;margin-top:10px}
 </style>
 </head>
 <body>
@@ -223,6 +245,17 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
     </div>
     <button class="nudge-btn" id="nudgeBtn">✦ Go Pro — €2.99/mo</button>
   </div>
+
+  <div class="app-bar">
+    <button class="app-store-btn" id="appStoreBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      App Store
+    </button>
+    <button class="app-store-btn" id="playStoreBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.22.99.14l12.45-7.19-2.78-2.78-10.66 9.83zm-1.92-20.7C1.1 3.3 1 3.63 1 4v16c0 .37.1.7.26 1l11.1-11.03L1.26 3.06zm20.2 8.53l-2.75-1.59-3.08 3.06 3.08 3.06 2.77-1.6c.79-.46.79-1.47-.02-1.93zM4.17.24L16.62 7.43l-2.78 2.78L3.18.38C3.52.3 3.88.07 4.17.24z"/></svg>
+      Google Play
+    </button>
+  </div>
 </div>
 
 <!-- ADD TRIP -->
@@ -243,7 +276,15 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       <label class="form-label">Dates</label>
       <div class="date-row">
         <div><div class="date-sub">Entry date</div><input class="form-input" type="date" id="entryDate"></div>
-        <div><div class="date-sub">Exit date</div><input class="form-input" type="date" id="exitDate"></div>
+        <div id="exitDateWrap"><div class="date-sub">Exit date</div><input class="form-input" type="date" id="exitDate"></div>
+      </div>
+      <div class="still-here-row">
+        <span class="still-here-label">🏠 I'm still here</span>
+        <label class="toggle">
+          <input type="checkbox" id="stillHereToggle">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
       </div>
     </div>
     <!-- Overstay warning shown inline before saving -->
@@ -253,6 +294,26 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
     </div>
     <button class="btn-primary" id="saveTripBtn">Save trip</button>
     <button class="btn-secondary" id="cancelTripBtn">Cancel</button>
+  </div>
+</div>
+
+<!-- WAITLIST (app coming soon) -->
+<div class="overlay" id="waitlistModal">
+  <div class="modal">
+    <div class="waitlist-body">
+      <div class="modal-handle"></div>
+      <div class="waitlist-icon">📱</div>
+      <div class="waitlist-title">VisaStay is coming to iOS & Android</div>
+      <div class="waitlist-sub">Be the first to know when the app launches.<br>No spam — just one email when it's ready.</div>
+      <div class="waitlist-form">
+        <input class="form-input" type="email" id="waitlistEmail" placeholder="your@email.com">
+        <button class="btn-primary" id="waitlistSubmitBtn" style="margin-top:0">Notify me →</button>
+        <button class="btn-secondary" id="waitlistSkipBtn">Maybe later</button>
+      </div>
+      <div class="waitlist-success" id="waitlistSuccess">
+        ✅ You're on the list! We'll email you when the app is ready.
+      </div>
+    </div>
   </div>
 </div>
 
@@ -581,7 +642,10 @@ function render() {
       var t=trips[i];
       var div=document.createElement('div');
       div.className='trip-item';
-      div.innerHTML='<div class="trip-flag">'+t.flag+'</div><div class="trip-info"><div class="trip-name">'+t.country+'</div><div class="trip-dates">'+fmtDate(t.entry)+' — '+fmtDate(t.exit)+'</div></div><div class="trip-right"><div class="trip-badge">'+tripDays(t.entry,t.exit)+'d</div><button class="trip-del" data-i="'+i+'">&#x2715;</button></div>';
+      var datesHtml = t.open
+        ? fmtDate(t.entry)+' — <strong style="color:var(--green)">still here</strong>'
+        : fmtDate(t.entry)+' — '+fmtDate(t.exit);
+      div.innerHTML='<div class="trip-flag">'+t.flag+'</div><div class="trip-info"><div class="trip-name">'+t.country+'</div><div class="trip-dates">'+datesHtml+'</div></div><div class="trip-right"><div class="trip-badge">'+tripDays(t.entry,t.exit)+'d</div><button class="trip-del" data-i="'+i+'">&#x2715;</button></div>';
       list.appendChild(div);
     }
     var dels = list.querySelectorAll('.trip-del');
@@ -643,6 +707,8 @@ function pickCountry(flag, name) {
   fp.textContent=flag; fp.style.display='block';
   document.getElementById('countryDropdown').style.display='none';
   buildGrid('');
+  // Trigger overstay check now that country is set
+  if (typeof liveOverstayCheck === 'function') liveOverstayCheck();
 }
 
 function showPaywall() {
@@ -710,6 +776,9 @@ window.onload = function() {
     document.getElementById('entryDate').value='';
     document.getElementById('exitDate').value='';
     document.getElementById('overstayWarning').style.display='none';
+    document.getElementById('stillHereToggle').checked=false;
+    document.getElementById('exitDateWrap').style.opacity='1';
+    document.getElementById('exitDateWrap').style.pointerEvents='';
     openOverlay('addModal');
     buildGrid('');
   };
@@ -721,20 +790,38 @@ window.onload = function() {
     buildGrid(this.value);
   };
 
-  // ─── Live overstay check: runs whenever entry or exit date changes ───
+  // ─── Still here toggle ───
+  document.getElementById('stillHereToggle').onchange = function() {
+    var exitWrap = document.getElementById('exitDateWrap');
+    if (this.checked) {
+      exitWrap.style.opacity = '0.35';
+      exitWrap.style.pointerEvents = 'none';
+      document.getElementById('exitDate').value = '';
+    } else {
+      exitWrap.style.opacity = '1';
+      exitWrap.style.pointerEvents = '';
+    }
+    liveOverstayCheck();
+  };
+
+  // ─── Live overstay check: runs when dates or country change ───
   function liveOverstayCheck() {
     var entry = document.getElementById('entryDate').value;
-    var exit  = document.getElementById('exitDate').value;
+    var stillHere = document.getElementById('stillHereToggle').checked;
     var warn  = document.getElementById('overstayWarning');
     var warnText = document.getElementById('overstayWarningText');
-    if (!entry || !exit || new Date(exit) < new Date(entry)) {
-      warn.style.display = 'none';
-      return;
-    }
-    if (!selCountry.name) {
-      warn.style.display = 'none';
-      return;
-    }
+
+    // Need entry date at minimum
+    if (!entry) { warn.style.display = 'none'; return; }
+    if (!selCountry.name) { warn.style.display = 'none'; return; }
+
+    // Determine the exit date to use for the check
+    var today = new Date(); today.setHours(0,0,0,0);
+    var todayStr = today.toISOString().split('T')[0];
+    var exit = stillHere ? todayStr : document.getElementById('exitDate').value;
+
+    if (!exit || new Date(exit) < new Date(entry)) { warn.style.display = 'none'; return; }
+
     var violation = checkTripOverstay(entry, exit);
     if (violation) {
       warnText.textContent = 'This trip would cause an overstay on ' + violation.date + ' (' + violation.total + ' days in a 180-day window). You may face fines or an entry ban.';
@@ -750,26 +837,20 @@ window.onload = function() {
 
   document.getElementById('saveTripBtn').onclick = function() {
     var entry=document.getElementById('entryDate').value;
-    var exit=document.getElementById('exitDate').value;
+    var stillHere=document.getElementById('stillHereToggle').checked;
+    var today=new Date(); today.setHours(0,0,0,0);
+    var todayStr=today.toISOString().split('T')[0];
+    var exit=stillHere ? todayStr : document.getElementById('exitDate').value;
+
     if (!selCountry.name) {
       var ci=document.getElementById('countryInput');
       ci.style.borderColor='#dc2626'; setTimeout(function(){ci.style.borderColor='';},1500); return;
     }
-    if (!entry||!exit) {alert('Please enter both dates.');return;}
-    if (new Date(exit)<new Date(entry)) {alert('Exit date must be after entry date.');return;}
+    if (!entry) {alert('Please enter an entry date.');return;}
+    if (!stillHere && !exit) {alert('Please enter an exit date or toggle I am still here.');return;}
+    if (!stillHere && new Date(exit)<new Date(entry)) {alert('Exit date must be after entry date.');return;}
 
-    // ─── Overstay check on save ───
-    var violation = checkTripOverstay(entry, exit);
-    if (violation) {
-      // Save anyway but show the warning box (already visible) — trip is saved so user is informed
-      trips.push({country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit});
-      closeOverlay('addModal');
-      render();
-      return;
-    }
-    // ─────────────────────────────
-
-    trips.push({country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit});
+    trips.push({country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit,open:stillHere});
     closeOverlay('addModal');
     render();
   };
@@ -820,6 +901,30 @@ window.onload = function() {
 
   // explainer
   document.getElementById('gotItBtn').onclick = function() { closeOverlay('explainerModal'); };
+
+  // app store buttons
+  document.getElementById('appStoreBtn').onclick  = function() { openOverlay('waitlistModal'); };
+  document.getElementById('playStoreBtn').onclick = function() { openOverlay('waitlistModal'); };
+
+  // waitlist modal
+  var overlaysAll = ['addModal','paywallModal','accountModal','explainerModal','waitlistModal'];
+  document.getElementById('waitlistModal').onclick = function(e) {
+    if (e.target===this) closeOverlay('waitlistModal');
+  };
+  document.getElementById('waitlistSkipBtn').onclick = function() { closeOverlay('waitlistModal'); };
+  document.getElementById('waitlistSubmitBtn').onclick = function() {
+    var email = document.getElementById('waitlistEmail').value.trim();
+    if (!email || !email.includes('@')) {
+      var el = document.getElementById('waitlistEmail');
+      el.style.borderColor='#dc2626'; setTimeout(function(){el.style.borderColor='';},1500); return;
+    }
+    // In future: POST email to Supabase/Mailchimp. For now just show success.
+    document.getElementById('waitlistEmail').style.display='none';
+    document.getElementById('waitlistSubmitBtn').style.display='none';
+    document.getElementById('waitlistSkipBtn').style.display='none';
+    document.getElementById('waitlistSuccess').style.display='block';
+    setTimeout(function(){ closeOverlay('waitlistModal'); },2500);
+  };
 
   render();
 };
