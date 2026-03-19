@@ -820,6 +820,22 @@ async function deleteTripFromDB(tripId) {
 // WIRE UP ALL BUTTONS
 window.onload = async function() {
 
+  // Handle return from Stripe
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('payment') === 'success') {
+    setTimeout(function() {
+      var ab = document.getElementById('alertBox');
+      var at = document.getElementById('alertText');
+      ab.className = 'alert-box green';
+      at.innerHTML = '🎉 <strong>Welcome to Pro!</strong> Your subscription is active. Email alerts and unlimited trips are now enabled.';
+    }, 1500);
+    // Pulisci l'URL
+    window.history.replaceState({}, '', '/');
+  }
+  if (urlParams.get('payment') === 'cancelled') {
+    window.history.replaceState({}, '', '/');
+  }
+
   // Check if user is already logged in (existing session)
   var sessionRes = await sb.auth.getSession();
   if (sessionRes.data && sessionRes.data.session) {
@@ -1033,6 +1049,27 @@ window.onload = async function() {
     if (res.data && res.data.user) {
       var profile = await sb.from('profiles').select('*').eq('id', res.data.user.id).single();
       onLoginSuccess(res.data.user, profile.data);
+
+      // Se arriva dal paywall e non è già Pro, avvia il checkout Stripe
+      if (authMode === 'signup' && profile.data && profile.data.role === 'free') {
+        btn.textContent = 'Redirecting to payment...'; btn.disabled = true;
+        var checkoutRes = await fetch(
+          'https://sbjwqkolzoimbyaazrls.supabase.co/functions/v1/create-checkout-session',
+          {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({plan: currentPlan, user_id: res.data.user.id})
+          }
+        );
+        var checkoutData = await checkoutRes.json();
+        if (checkoutData.url) {
+          window.location.href = checkoutData.url;
+        } else {
+          btn.textContent = 'Continue to payment →'; btn.disabled = false;
+          errEl.textContent = 'Payment error. Please try again.';
+          errEl.style.display = 'block';
+        }
+      }
     }
   };
 
