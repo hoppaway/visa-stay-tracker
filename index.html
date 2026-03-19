@@ -14,6 +14,7 @@
 <title>VisaStay Tracker</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='900' font-size='16' fill='white'>90</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -417,9 +418,17 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
+// ─── Supabase ───────────────────────────────────────────────────────────────
+var SUPABASE_URL = 'https://sbjwqkolzoimbyaazrls.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiandxa29sem9pbWJ5YWF6cmxzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MTc5ODQsImV4cCI6MjA4OTQ5Mzk4NH0.JEvEjyW5RqYB5OLwTPuw3WqImUBfSXOJ6aUo-3Fyxfk';
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+// ────────────────────────────────────────────────────────────────────────────
+
 var MAX_FREE = 3;
 var isLoggedIn = false;
+var currentUser = null;
+var currentProfile = null;
 var trips = JSON.parse(localStorage.getItem('vst_trips') || '[]');
 var selCountry = {flag:'', name:''};
 var currentPlan = 'monthly';
@@ -660,7 +669,13 @@ function render() {
     }
     var dels = list.querySelectorAll('.trip-del');
     for (var d=0; d<dels.length; d++) {
-      dels[d].onclick = function() { trips.splice(parseInt(this.getAttribute('data-i')),1); render(); };
+      dels[d].onclick = function() {
+        var idx = parseInt(this.getAttribute('data-i'));
+        var trip = trips[idx];
+        if (isLoggedIn && trip.id) deleteTripFromDB(trip.id);
+        trips.splice(idx, 1);
+        render();
+      };
     }
   }
 
@@ -742,25 +757,78 @@ function selectPlan(plan) {
   }
 }
 
-function loginSuccess(email) {
-  isLoggedIn=true; MAX_FREE=9999;
-  document.getElementById('accountEmailDisplay').textContent=email;
-  document.getElementById('loginView').style.display='none';
-  document.getElementById('loggedInView').style.display='block';
-  var nb=document.getElementById('navBtn');
-  nb.textContent='👤 Account';
-  nb.style.background='#2563eb';
-  nb.onclick=function(){
-    document.getElementById('loggedInView').style.display='block';
-    document.getElementById('loginView').style.display='none';
+// ─── Auth helpers ────────────────────────────────────────────────────────────
+
+function onLoginSuccess(user, profile) {
+  currentUser = user;
+  currentProfile = profile;
+  isLoggedIn = true;
+  MAX_FREE = 9999;
+  document.getElementById('accountEmailDisplay').textContent = user.email;
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('loggedInView').style.display = 'block';
+  var nb = document.getElementById('navBtn');
+  nb.textContent = '👤 Account';
+  nb.style.background = '#2563eb';
+  nb.onclick = function() {
+    document.getElementById('loggedInView').style.display = 'block';
+    document.getElementById('loginView').style.display = 'none';
     openOverlay('accountModal');
   };
   closeOverlay('accountModal');
-  render();
+  // Load trips from Supabase, replacing localStorage trips
+  loadTripsFromDB();
 }
 
+async function loadTripsFromDB() {
+  if (!currentUser) return;
+  var res = await sb.from('trips').select('*').order('entry', {ascending: true});
+  if (res.data) {
+    trips = res.data.map(function(t) {
+      return {id: t.id, country: t.country, flag: t.flag, entry: t.entry, exit: t.exit, open: t.open};
+    });
+    render();
+  }
+}
+
+async function saveTripToDB(trip) {
+  if (!currentUser) return null;
+  var res = await sb.from('trips').insert({
+    user_id: currentUser.id,
+    country: trip.country,
+    flag: trip.flag,
+    entry: trip.entry,
+    exit: trip.exit,
+    open: trip.open || false
+  }).select().single();
+  return res.data ? res.data.id : null;
+}
+
+async function deleteTripFromDB(tripId) {
+  if (!currentUser || !tripId) return;
+  await sb.from('trips').delete().eq('id', tripId);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+
 // WIRE UP ALL BUTTONS
-window.onload = function() {
+window.onload = async function() {
+
+  // Check if user is already logged in (existing session)
+  var sessionRes = await sb.auth.getSession();
+  if (sessionRes.data && sessionRes.data.session) {
+    var user = sessionRes.data.session.user;
+    var profileRes = await sb.from('profiles').select('*').eq('id', user.id).single();
+    onLoginSuccess(user, profileRes.data);
+  }
+
+  // Listen for auth state changes (e.g. Google OAuth redirect)
+  sb.auth.onAuthStateChange(async function(event, session) {
+    if (event === 'SIGNED_IN' && session && !currentUser) {
+      var profileRes = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+      onLoginSuccess(session.user, profileRes.data);
+    }
+  });
 
   // close overlays on background click
   var overlays = ['addModal','paywallModal','accountModal','explainerModal'];
@@ -867,11 +935,22 @@ window.onload = function() {
     if (!stillHere && !exit) {alert('Please enter an exit date or toggle I am still here.');return;}
     if (!stillHere && new Date(exit)<new Date(entry)) {alert('Exit date must be after entry date.');return;}
 
-    trips.push({country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit,open:stillHere});
-    if (trips.length === 1) gtag('event', 'first_trip_added');
-    gtag('event', 'trip_added', {total_trips: trips.length});
+    var newTrip = {country:selCountry.name,flag:selCountry.flag,entry:entry,exit:exit,open:stillHere};
+    if (isLoggedIn) {
+      saveTripToDB(newTrip).then(function(id) {
+        if (id) newTrip.id = id;
+        trips.push(newTrip);
+        if (trips.length === 1) gtag('event', 'first_trip_added');
+        gtag('event', 'trip_added', {total_trips: trips.length});
+        render();
+      });
+    } else {
+      trips.push(newTrip);
+      if (trips.length === 1) gtag('event', 'first_trip_added');
+      gtag('event', 'trip_added', {total_trips: trips.length});
+      render();
+    }
     closeOverlay('addModal');
-    render();
   };
 
   // paywall
@@ -891,28 +970,52 @@ window.onload = function() {
     closeOverlay('accountModal');
     showPaywall();
   };
-  document.getElementById('signupBtn').onclick = function() {
-    var email=document.getElementById('loginEmail').value.trim();
-    var pass=document.getElementById('loginPassword').value;
-    if (!email||!email.includes('@')) {
-      var el=document.getElementById('loginEmail');
+  document.getElementById('signupBtn').onclick = async function() {
+    var email = document.getElementById('loginEmail').value.trim();
+    var pass  = document.getElementById('loginPassword').value;
+    if (!email || !email.includes('@')) {
+      var el = document.getElementById('loginEmail');
       el.style.borderColor='#dc2626'; setTimeout(function(){el.style.borderColor='';},1500); return;
     }
-    if (!pass||pass.length<6) {
-      var pl=document.getElementById('loginPassword');
+    if (!pass || pass.length < 6) {
+      var pl = document.getElementById('loginPassword');
       pl.style.borderColor='#dc2626'; setTimeout(function(){pl.style.borderColor='';},1500); return;
     }
-    loginSuccess(email);
+    var btn = document.getElementById('signupBtn');
+    btn.textContent = 'Loading...'; btn.disabled = true;
+
+    // Try sign in first, then sign up
+    var res = await sb.auth.signInWithPassword({email: email, password: pass});
+    if (res.error) {
+      // User doesn't exist — sign up
+      res = await sb.auth.signUp({email: email, password: pass});
+    }
+    btn.textContent = 'Continue to payment →'; btn.disabled = false;
+    if (res.error) {
+      alert(res.error.message); return;
+    }
+    if (res.data && res.data.user) {
+      var profile = await sb.from('profiles').select('*').eq('id', res.data.user.id).single();
+      onLoginSuccess(res.data.user, profile.data);
+    }
   };
-  document.getElementById('googleBtn').onclick = function() { loginSuccess('user@gmail.com'); };
+
+  document.getElementById('googleBtn').onclick = async function() {
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {redirectTo: window.location.href}
+    });
+  };
   document.getElementById('closeAccountBtn').onclick = function() { closeOverlay('accountModal'); };
-  document.getElementById('logoutBtn').onclick = function() {
-    isLoggedIn=false; MAX_FREE=3;
+  document.getElementById('logoutBtn').onclick = async function() {
+    await sb.auth.signOut();
+    isLoggedIn = false; MAX_FREE = 3; currentUser = null; currentProfile = null;
+    trips = JSON.parse(localStorage.getItem('vst_trips') || '[]');
     closeOverlay('accountModal');
-    var nb=document.getElementById('navBtn');
-    nb.textContent='✦ Upgrade to Pro';
-    nb.style.background='#f59e0b';
-    nb.onclick=showPaywall;
+    var nb = document.getElementById('navBtn');
+    nb.textContent = '✦ Upgrade to Pro';
+    nb.style.background = '#f59e0b';
+    nb.onclick = showPaywall;
     render();
   };
 
@@ -945,7 +1048,7 @@ window.onload = function() {
       el.style.borderColor='#dc2626'; setTimeout(function(){el.style.borderColor='';},1500); return;
     }
     gtag('event', 'waitlist_signup');
-    // In future: POST email to Supabase/Mailchimp. For now just show success.
+    sb.from('waitlist').insert({email: email}).then(function() {});
     document.getElementById('waitlistEmail').style.display='none';
     document.getElementById('waitlistSubmitBtn').style.display='none';
     document.getElementById('waitlistSkipBtn').style.display='none';
@@ -974,17 +1077,11 @@ window.onload = function() {
 </script>
 <!-- FOOTER -->
 <div class="footer">
-  <a href="/privacy.html">Privacy Policy</a> · © 2026 VisaStay Tracker · <a href="mailto:info@visastaytracker.com">info@visastaytracker.com</a>
+  <a href="/privacy.html">Privacy Policy</a> · © 2026 VisaStay Tracker · <a href="/cdn-cgi/l/email-protection#076e69616847716e74667473667e737566646c62752964686a"><span class="__cf_email__" data-cfemail="b2dbdcd4ddf2c4dbc1d3c1c6d3cbc6c0d3d1d9d7c09cd1dddf">[email&#160;protected]</span></a>
 </div>
 
 <!-- COOKIE BANNER -->
 <div class="cookie-banner" id="cookieBanner" style="display:none">
   <div>🍪 We use cookies to analyze traffic and improve the app. <a href="/privacy.html">Learn more</a></div>
   <div class="cookie-btns">
-    <button class="cookie-decline" id="cookieDecline">Decline</button>
-    <button class="cookie-accept" id="cookieAccept">Accept</button>
-  </div>
-</div>
-
-</body>
-</html>
+    <button class="cookie-
