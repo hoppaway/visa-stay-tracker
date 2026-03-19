@@ -364,8 +364,9 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
   <div class="modal">
     <div id="loginView" class="account-body">
       <div class="modal-handle"></div>
-      <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:6px">Create your account</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:24px">Your trips will be saved and synced across all your devices.</div>
+      <div id="authTitle" style="font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:6px">Create your account</div>
+      <div id="authSub" style="font-size:13px;color:var(--muted);margin-bottom:24px">Your trips will be saved and synced across all your devices.</div>
+      <div id="authError" style="display:none;background:var(--red-bg);border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:13px;color:#7f1d1d;margin-bottom:14px"></div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="your@email.com"></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="loginPassword" placeholder="At least 6 characters"></div>
       <button class="btn-primary" id="signupBtn">Continue to payment →</button>
@@ -373,7 +374,12 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
         <div style="font-size:12px;color:var(--muted);margin-bottom:10px">or</div>
         <button class="google-btn" id="googleBtn"><span style="font-size:18px;font-weight:700">G</span>&nbsp;Continue with Google</button>
       </div>
-      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">Already have an account? <span id="signinLink" style="color:var(--blue);cursor:pointer;font-weight:600">Sign in</span></div>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)" id="authToggleRow">
+        Already have an account? <span id="signinLink" style="color:var(--blue);cursor:pointer;font-weight:600">Sign in</span>
+      </div>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted);display:none" id="authToggleRowSignup">
+        Don't have an account? <span id="signupLink" style="color:var(--blue);cursor:pointer;font-weight:600">Create one</span>
+      </div>
       <button class="btn-secondary" id="backToPaywallBtn">← Back</button>
     </div>
     <div id="loggedInView" class="account-body" style="display:none">
@@ -962,6 +968,7 @@ window.onload = async function() {
     closeOverlay('paywallModal');
     document.getElementById('loginView').style.display='block';
     document.getElementById('loggedInView').style.display='none';
+    setAuthMode('signup');
     openOverlay('accountModal');
   };
 
@@ -970,9 +977,29 @@ window.onload = async function() {
     closeOverlay('accountModal');
     showPaywall();
   };
+  // Auth mode: 'signup' or 'signin'
+  var authMode = 'signup';
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    var isSignin = mode === 'signin';
+    document.getElementById('authTitle').textContent = isSignin ? 'Welcome back' : 'Create your account';
+    document.getElementById('authSub').textContent = isSignin ? 'Sign in to access your trips and account.' : 'Your trips will be saved and synced across all your devices.';
+    document.getElementById('signupBtn').textContent = isSignin ? 'Sign in →' : 'Continue to payment →';
+    document.getElementById('authToggleRow').style.display = isSignin ? 'none' : 'block';
+    document.getElementById('authToggleRowSignup').style.display = isSignin ? 'block' : 'none';
+    document.getElementById('authError').style.display = 'none';
+  }
+
+  document.getElementById('signinLink').onclick = function() { setAuthMode('signin'); };
+  document.getElementById('signupLink').onclick  = function() { setAuthMode('signup'); };
+
   document.getElementById('signupBtn').onclick = async function() {
     var email = document.getElementById('loginEmail').value.trim();
     var pass  = document.getElementById('loginPassword').value;
+    var errEl = document.getElementById('authError');
+    errEl.style.display = 'none';
+
     if (!email || !email.includes('@')) {
       var el = document.getElementById('loginEmail');
       el.style.borderColor='#dc2626'; setTimeout(function(){el.style.borderColor='';},1500); return;
@@ -984,15 +1011,24 @@ window.onload = async function() {
     var btn = document.getElementById('signupBtn');
     btn.textContent = 'Loading...'; btn.disabled = true;
 
-    // Try sign in first, then sign up
-    var res = await sb.auth.signInWithPassword({email: email, password: pass});
-    if (res.error) {
-      // User doesn't exist — sign up
-      res = await sb.auth.signUp({email: email, password: pass});
+    var res;
+    if (authMode === 'signin') {
+      res = await sb.auth.signInWithPassword({email: email, password: pass});
+    } else {
+      // Try signin first (user might already exist), then signup
+      res = await sb.auth.signInWithPassword({email: email, password: pass});
+      if (res.error) {
+        res = await sb.auth.signUp({email: email, password: pass});
+      }
     }
-    btn.textContent = 'Continue to payment →'; btn.disabled = false;
+
+    btn.textContent = authMode === 'signin' ? 'Sign in →' : 'Continue to payment →';
+    btn.disabled = false;
+
     if (res.error) {
-      alert(res.error.message); return;
+      errEl.textContent = res.error.message;
+      errEl.style.display = 'block';
+      return;
     }
     if (res.data && res.data.user) {
       var profile = await sb.from('profiles').select('*').eq('id', res.data.user.id).single();
