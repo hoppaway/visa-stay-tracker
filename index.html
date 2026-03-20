@@ -448,7 +448,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
       </div>
       <div class="account-section">
         <div class="account-section-title">Subscription</div>
-        <div class="account-row"><div><div style="font-size:14px;font-weight:600">Pro Plan</div><div style="font-size:12px;color:var(--muted)">Renews May 12, 2026</div></div><span style="color:var(--blue);font-weight:600;cursor:pointer">Manage</span></div>
+        <div class="account-row"><div><div style="font-size:14px;font-weight:600">Pro Plan</div><div style="font-size:12px;color:var(--muted)" id="subscriptionRenewal">—</div></div><span id="manageBtn" style="color:var(--blue);font-weight:600;cursor:pointer">Manage</span></div>
       </div>
       <div class="account-section">
         <div class="account-section-title">Email alerts</div>
@@ -860,6 +860,27 @@ async function loadTripsFromDB() {
     });
     render();
   }
+  // Load subscription data
+  var subRes = await sb.from('subscriptions').select('*').eq('user_id', currentUser.id).single();
+  var manageBtn = document.getElementById('manageBtn');
+  var renewalEl = document.getElementById('subscriptionRenewal');
+  var proEl = document.querySelector('#loggedInView .account-pro');
+  if (subRes.data && subRes.data.status === 'active') {
+    if (renewalEl && subRes.data.current_period_end) {
+      var d = new Date(subRes.data.current_period_end);
+      renewalEl.textContent = 'Renews ' + d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+    }
+    if (manageBtn) manageBtn.style.display = '';
+    if (proEl) proEl.textContent = '✓ Pro — active';
+  } else if (currentProfile && currentProfile.role === 'admin') {
+    if (renewalEl) renewalEl.textContent = 'Admin account';
+    if (manageBtn) manageBtn.style.display = 'none';
+    if (proEl) proEl.textContent = '✓ Admin';
+  } else {
+    if (renewalEl) renewalEl.textContent = 'Free plan';
+    if (manageBtn) manageBtn.style.display = 'none';
+    if (proEl) proEl.textContent = 'Free plan';
+  }
 }
 
 async function saveTripToDB(trip) {
@@ -1162,6 +1183,28 @@ window.onload = async function() {
     });
   };
   document.getElementById('closeAccountBtn').onclick = function() { closeOverlay('accountModal'); };
+
+  // Manage subscription button → Stripe Customer Portal
+  document.getElementById('manageBtn').onclick = async function() {
+    if (!currentUser) return;
+    var btn = document.getElementById('manageBtn');
+    btn.textContent = 'Loading...';
+    var res = await fetch(
+      'https://sbjwqkolzoimbyaazrls.supabase.co/functions/v1/create-portal-session',
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: currentUser.id})
+      }
+    );
+    var data = await res.json();
+    btn.textContent = 'Manage';
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Unable to open subscription management. Please contact info@visastaytracker.com');
+    }
+  };
   document.getElementById('logoutBtn').onclick = async function() {
     await sb.auth.signOut();
     isLoggedIn = false; MAX_FREE = 3; currentUser = null; currentProfile = null;
