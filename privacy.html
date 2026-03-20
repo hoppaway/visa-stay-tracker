@@ -54,7 +54,7 @@ a:hover{text-decoration:underline}
 
   <h2>1. Who we are</h2>
   <p>VisaStay Tracker is a web application that helps non-EU travelers track their stay in the Schengen Area. It is operated by VisaStay Tracker.</p>
-  <p>For any privacy-related questions, contact us at: <a href="/cdn-cgi/l/email-protection#3d54535b527d4b544e5c4e495c44494f5c5e56584f135e5250"><span class="__cf_email__" data-cfemail="91f8fff7fed1e7f8e2f0e2e5f0e8e5e3f0f2faf4e3bff2fefc">[email&#160;protected]</span></a></p>
+  <p>For any privacy-related questions, contact us at: <span id="privacyEmail1"></span></p>
 
   <h2>2. What data we collect</h2>
 
@@ -111,7 +111,7 @@ a:hover{text-decoration:underline}
     <li><strong>Objection</strong> — you can object to processing based on legitimate interest.</li>
     <li><strong>Withdraw consent</strong> — where processing is based on consent, you can withdraw it at any time.</li>
   </ul>
-  <p>To exercise any of these rights, email us at <a href="/cdn-cgi/l/email-protection#3b52555d547b4d52485a484f5a424f495a58505e4915585456"><span class="__cf_email__" data-cfemail="93fafdf5fcd3e5fae0f2e0e7f2eae7e1f2f0f8f6e1bdf0fcfe">[email&#160;protected]</span></a>. We will respond within 30 days.</p>
+  <p>To exercise any of these rights, email us at <span id="privacyEmail2"></span>. We will respond within 30 days.</p>
 
   <h2>8. Data security</h2>
   <p>We take reasonable technical measures to protect your data. Trip data is stored only in your browser unless you create an account. When account features are live, all data will be transmitted over encrypted HTTPS connections and stored in secure cloud infrastructure (Supabase).</p>
@@ -120,4 +120,22 @@ a:hover{text-decoration:underline}
   <p>VisaStay Tracker is not directed at children under 16. We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact us and we will delete it promptly.</p>
 
   <h2>10. Changes to this policy</h2>
-  <p>We may update this policy from time to time. When we do, we will update the "Last updated" date at t
+  <p>We may update this policy from time to time. When we do, we will update the "Last updated" date at the top. For significant changes, we will notify users via email if we have your address.</p>
+
+  <h2>11. Contact</h2>
+  <p>For any questions about this Privacy Policy or your data:<br>
+  📧 <span id="privacyEmail3"></span></p>
+</div>
+
+<script>
+function writePrivacyEmail(id) {
+  var el = document.getElementById(id);
+  if (el) el.innerHTML = '<a href="mail'+'to:info@visastaytracker.com">info@visastaytracker.com</a>';
+}
+writePrivacyEmail('privacyEmail1');
+writePrivacyEmail('privacyEmail2');
+writePrivacyEmail('privacyEmail3');
+</script>
+
+</body>
+</html>
