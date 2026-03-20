@@ -37,6 +37,17 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
 .nav-btn:hover{background:#d97706}
 .nav-login-btn{background:none;border:1.5px solid var(--border);color:var(--text);padding:7px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .nav-login-btn:hover{background:var(--light)}
+@media(max-width:400px){
+  nav{padding:0 12px}
+  .nav-btn{padding:6px 10px;font-size:12px}
+  .nav-login-btn{padding:6px 10px;font-size:12px}
+  .nav-btn .nav-full-text{display:none}
+  .nav-btn .nav-short-text{display:inline}
+}
+@media(min-width:401px){
+  .nav-btn .nav-short-text{display:none}
+  .nav-btn .nav-full-text{display:inline}
+}
 .nav-avatar{width:32px;height:32px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;border:none}
 .nav-avatar:hover{opacity:.85}
 .wrap{max-width:480px;margin:0 auto;padding:20px 16px}
@@ -208,7 +219,7 @@ nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <button class="nav-login-btn" id="navLoginBtn">Sign in</button>
-    <button class="nav-btn" id="navBtn">✦ Upgrade to Pro</button>
+    <button class="nav-btn" id="navBtn"><span class="nav-full-text">✦ Upgrade to Pro</span><span class="nav-short-text">✦ Pro</span></button>
   </div>
 </nav>
 
