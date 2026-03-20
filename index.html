@@ -845,12 +845,7 @@ function onLoginSuccess(user, profile) {
   var initials = user.email ? user.email.substring(0,2).toUpperCase() : '?';
   nb.className = 'nav-avatar';
   nb.textContent = initials;
-  nb.style.background = '#2563eb';
-  nb.onclick = function() {
-    document.getElementById('loggedInView').style.display = 'block';
-    document.getElementById('loginView').style.display = 'none';
-    openOverlay('accountModal');
-  };
+  nb.style.background = '';
   closeOverlay('accountModal');
   // Load trips from Supabase, replacing localStorage trips
   loadTripsFromDB();
@@ -935,10 +930,16 @@ window.onload = async function() {
     })(overlays[o]);
   }
 
-  // nav button
+  // nav button — checks login state each time it's clicked
   document.getElementById('navBtn').onclick = function() {
-    gtag('event', 'upgrade_click', {location: 'navbar'});
-    showPaywall();
+    if (isLoggedIn) {
+      document.getElementById('loggedInView').style.display = 'block';
+      document.getElementById('loginView').style.display = 'none';
+      openOverlay('accountModal');
+    } else {
+      gtag('event', 'upgrade_click', {location: 'navbar'});
+      showPaywall();
+    }
   };
 
   // nav login button
@@ -1171,7 +1172,6 @@ window.onload = async function() {
     nb.className = 'nav-btn';
     nb.textContent = '✦ Upgrade to Pro';
     nb.style.background = '#f59e0b';
-    nb.onclick = showPaywall;
     var loginBtn = document.getElementById('navLoginBtn');
     if (loginBtn) loginBtn.style.display = '';
     render();
@@ -1235,8 +1235,12 @@ window.onload = async function() {
 </script>
 <!-- FOOTER -->
 <div class="footer">
-  <a href="/privacy.html">Privacy Policy</a> · © 2026 VisaStay Tracker · <a href="/cdn-cgi/l/email-protection#10797e767f506679637163647169646271737b75623e737f7d"><span class="__cf_email__" data-cfemail="650c0b030a25130c16041611041c111704060e00174b060a08">[email&#160;protected]</span></a>
+  <a href="/privacy.html">Privacy Policy</a> · © 2026 VisaStay Tracker · <span id="footerEmail"></span>
 </div>
+<script>
+// Write email via JS to avoid Cloudflare obfuscation
+document.getElementById('footerEmail').innerHTML = '<a href="mail'+'to:info@visastaytracker.com">info@visastaytracker.com</a>';
+</script>
 
 <!-- COOKIE BANNER -->
 <div class="cookie-banner" id="cookieBanner" style="display:none">
